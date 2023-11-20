@@ -6,12 +6,14 @@ namespace SpaceWars.Logic;
 public class Player : IEquatable<Player?>
 {
     private Queue<GamePlayAction> actions;
+    private Queue<PlayerMessage> playerMessages; 
     public Player(string name, Ship ship)
     {
         Name = name;
         Ship = ship;
         Token = PlayerToken.Generate();
         actions = new Queue<GamePlayAction>();
+        playerMessages = new Queue<PlayerMessage>();
     }
 
     public string Name { get; }
@@ -32,6 +34,21 @@ public class Player : IEquatable<Player?>
         if (actions.Any())
             return actions.Dequeue();
         return null;
+    }
+
+    public void EnqueueMessage(PlayerMessage message)
+    {
+        playerMessages.Enqueue(message);
+    }
+
+    public IEnumerable<PlayerMessage> GetMessages()
+    {
+        var messages = new List<PlayerMessage>();
+        while (playerMessages.Any())
+        {
+            messages.Add(playerMessages.Dequeue());
+        }
+        return messages;
     }
 
     public override bool Equals(object? obj)
@@ -63,11 +80,18 @@ public class Player : IEquatable<Player?>
     }
 }
 
+public record PlayerMessage (PlayerMessageType Type, string Message);
+
+public enum PlayerMessageType
+{
+    RadarSweepResult,
+}
+
 public class PlayerToken : IEquatable<PlayerToken?>
 {
     public string Value { get; init; }
 
-    private PlayerToken(string value)
+    public PlayerToken(string value)
     {
         Value = value;
     }

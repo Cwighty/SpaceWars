@@ -59,6 +59,15 @@ public partial class GameController(ILogger<GameController> logger, Game game, I
     {
         return new GameStateResponse(game.State.ToString(), game.PlayerLocations.Select(l => l.ToApiLocation()));
     }
+
+    [HttpGet("playermessages")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<PlayerMessageResponse>))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IEnumerable<PlayerMessageResponse>> GetPlayerMessagesAsync(string token)
+    {
+        var player = game.GetPlayerByToken(new PlayerToken(token));
+        return player.GetMessages().Select(m => new PlayerMessageResponse(m.Type.ToString(), m.Message));
+    }
 }
 
 
