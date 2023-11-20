@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Exceptions;
 using SpaceWars.Logic;
+using SpaceWars.Web;
 using SpaceWars.Web.Components;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
@@ -19,6 +20,8 @@ builder.Services.AddOptions<GameConfig>()
     .BindConfiguration(nameof(GameConfig))
     .ValidateDataAnnotations()
     .ValidateOnStart();
+
+builder.Services.AddSingleton<SpaceWars.Logic.ITimer, CompetitionTimer>();
 builder.Services.AddSingleton<Game>();
 builder.Services.AddSingleton<IInitialLocationProvider, DefaultInitialLocationProvider>();
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -110,4 +113,5 @@ public class GameConfig
     public string Password { get; set; } = "password";
     [Range(10, 100_000)]
     public int ApiLimitPerSecond { get; set; } = 50;
+    public int TickFrequencyMilliseconds = 333;
 }
