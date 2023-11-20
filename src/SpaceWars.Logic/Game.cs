@@ -7,13 +7,20 @@ public class Game
     private readonly Dictionary<PlayerToken, Player> players;
     private readonly IInitialLocationProvider locationProvider;
 
-    public Game(IInitialLocationProvider locationProvider, int boardWidth = 2000, int boardHeight = 2000)
+    private ITimer? timer;
+
+    public Game(IInitialLocationProvider locationProvider, ITimer gameTimer = null, int boardWidth = 2000, int boardHeight = 2000)
     {
         this.players = new();
         this.locationProvider = locationProvider;
         BoardWidth = boardWidth;
         BoardHeight = boardHeight;
         state = GameState.Joining;
+        if (gameTimer is not null)
+        {
+            timer = gameTimer;
+            timer.RegisterAction(() => Tick());
+        }
     }
 
     public GameJoinResult Join(string playerName)
@@ -31,6 +38,18 @@ public class Game
         }
 
         state = GameState.Playing;
+        timer?.Start();
+    }
+
+    public void Stop()
+    {
+        if (State != GameState.Playing)
+        {
+            throw new InvalidGameStateException();
+        }
+
+        state = GameState.GameOver;
+        timer?.Stop();
     }
 
     private GameState state;
