@@ -1,12 +1,14 @@
-﻿namespace SpaceWars.Web;
+﻿using Microsoft.Extensions.Options;
+
+namespace SpaceWars.Web;
 public class CompetitionTimer : SpaceWars.Logic.ITimer
 {
     private Action tickAction;
     private Timer timer;
 
-    public CompetitionTimer(GameConfig gameConfig)
+    public CompetitionTimer(IOptions<GameConfig> gameConfig)
     {
-        Frequency = TimeSpan.FromMilliseconds(gameConfig.TickFrequencyMilliseconds);
+        Frequency = TimeSpan.FromMilliseconds(gameConfig.Value.TickFrequencyMilliseconds);
     }
 
     public TimeSpan Frequency { get; set; }
